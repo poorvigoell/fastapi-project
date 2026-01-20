@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Todo, TodoFormData } from "@/types";
-// import { getUserTodos } from "@/data/mockData";
 import api from "@/lib/api";
 import { useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
@@ -20,6 +19,8 @@ import { Plus, Search, Filter, CheckCircle2, Circle, ListTodo } from "lucide-rea
 
 const Dashboard = () => {
   const { user } = useAuth();
+  if (!user) return null;
+
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const [isFormOpen, setIsFormOpen] = useState(false);

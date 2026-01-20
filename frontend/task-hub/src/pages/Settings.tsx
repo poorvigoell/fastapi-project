@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Lock, Phone, Loader2, CheckCircle2 } from "lucide-react";
 import { Navigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import api from "@/lib/api";
 
 const passwordSchema = z.object({
   current_password: z.string().min(1, "Current password is required"),
@@ -30,7 +31,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 type PhoneFormData = z.infer<typeof phoneSchema>;
 
 const Settings = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, refreshUser } = useAuth();
   const { toast } = useToast();
   const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || "");
 
@@ -50,25 +51,46 @@ const Settings = () => {
   }
 
   const handlePasswordSubmit = async (data: PasswordFormData) => {
-    // Mock API call
-    console.log("Password update:", data);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    toast({
-      title: "Password updated",
-      description: "Your password has been changed successfully.",
-    });
-    passwordForm.reset();
+    try {
+      await api.put("/user/password", {
+        current_password: data.current_password,
+        new_password: data.new_password,
+      });
+
+      toast({
+        title: "Password updated",
+        description: "Your password has been changed successfully.",
+      });
+
+      passwordForm.reset();
+    } catch (err) {
+      toast({
+        title: "Password update failed",
+        description: "Current password is incorrect.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePhoneSubmit = async (data: PhoneFormData) => {
-    // Mock API call
-    console.log("Phone update:", data);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setPhoneNumber(data.phone_number);
-    toast({
-      title: "Phone number updated",
-      description: "Your phone number has been changed successfully.",
-    });
+    try {
+      await api.put(`/user/phonenumber/${data.phone_number}`);
+
+      setPhoneNumber(data.phone_number);
+      await refreshUser();
+      phoneForm.reset({ phone_number: data.phone_number });
+
+      toast({
+        title: "Phone number updated",
+        description: "Your phone number has been changed successfully.",
+      });
+    } catch (err) {
+      toast({
+        title: "Update failed",
+        description: "Could not update phone number.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -117,7 +139,8 @@ const Settings = () => {
                   )}
                 </div>
 
-                <Button type="submit" disabled={phoneForm.formState.isSubmitting}>
+                <Button type="submit" disabled={phoneForm.formState.isSubmitting ||
+    phoneForm.watch("phone_number") === phoneNumber}>
                   {phoneForm.formState.isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

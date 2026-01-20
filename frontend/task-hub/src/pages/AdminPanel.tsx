@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Todo } from "@/types";
-import { getAllTodos, mockUsers } from "@/data/mockData";
 import Navbar from "@/components/layout/Navbar";
 import TodoList from "@/components/todos/TodoList";
 import { Button } from "@/components/ui/button";
@@ -15,18 +14,37 @@ import {
 } from "@/components/ui/select";
 import { Search, Filter, Users, ListTodo, Shield } from "lucide-react";
 import { Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import api from "@/lib/api";
 
 const AdminPanel = () => {
-  const { isAdmin, user } = useAuth();
-  const [todos, setTodos] = useState<Todo[]>(getAllTodos);
+  const { isAdmin, loading } = useAuth();
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterOwner, setFilterOwner] = useState<string>("all");
+  // const [filterOwner, setFilterOwner] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "completed" | "pending">("all");
 
-  // Redirect non-admin users
+  if (loading) return null;
+
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchAdminTodos = async () => {
+      try {
+        const res = await api.get("/admin/todo");
+        setTodos(res.data);
+      } catch (err) {
+        console.error("Failed to fetch admin todos", err);
+      }
+    };
+
+    fetchAdminTodos();
+  }, [isAdmin]);
+
 
   const filteredTodos = useMemo(() => {
     let result = [...todos];
@@ -41,9 +59,9 @@ const AdminPanel = () => {
     }
 
     // Filter by owner
-    if (filterOwner !== "all") {
-      result = result.filter((todo) => todo.owner_id === Number(filterOwner));
-    }
+    // if (filterOwner !== "all") {
+    //   result = result.filter((todo) => todo.owner_id === Number(filterOwner));
+    // }
 
     // Filter by status
     if (filterStatus === "completed") {
@@ -56,31 +74,30 @@ const AdminPanel = () => {
     result.sort((a, b) => b.priority - a.priority);
 
     return result;
-  }, [todos, searchQuery, filterOwner, filterStatus]);
+  }, [todos, searchQuery, filterStatus]);
 
   const stats = useMemo(() => {
     return {
       totalTodos: todos.length,
-      totalUsers: mockUsers.length,
+      totalUsers: new Set(todos.map((t) => t.owner_id)).size,
       completedTodos: todos.filter((t) => t.completed).length,
     };
   }, [todos]);
 
-  const handleToggleComplete = (id: number) => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
+  const handleToggleComplete = () => { };
 
   const handleEdit = (todo: Todo) => {
     // Admin can view but editing would require the todo form
     console.log("View todo:", todo);
   };
 
-  const handleDelete = (id: number) => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await api.delete(`/admin/todo/${id}`);
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    } catch (err) {
+      console.error("Admin delete failed", err);
+    }
   };
 
   return (
@@ -147,7 +164,7 @@ const AdminPanel = () => {
             />
           </div>
           <div className="flex gap-2">
-            <Select value={filterOwner} onValueChange={setFilterOwner}>
+            {/* <Select value={filterOwner} onValueChange={setFilterOwner}>
               <SelectTrigger className="w-[150px]">
                 <Users className="h-4 w-4 mr-2" />
                 <SelectValue placeholder="All Users" />
@@ -160,7 +177,7 @@ const AdminPanel = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
             <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
               <SelectTrigger className="w-[130px]">
                 <Filter className="h-4 w-4 mr-2" />
@@ -182,6 +199,7 @@ const AdminPanel = () => {
           onEdit={handleEdit}
           onDelete={handleDelete}
           showOwner={true}
+          readOnly={true}
           emptyMessage="No tasks found matching your filters."
         />
       </main>

@@ -10,6 +10,7 @@ interface AuthContextType {
   logout: () => void;
   isAdmin: boolean;
   loading: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,6 +65,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     restoreUser();
   }, []);
 
+  const refreshUser = async () => {
+    const res = await api.get("/user");
+    setUser(res.data);
+  };
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -71,7 +76,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, isAdmin, loading }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, isAdmin, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

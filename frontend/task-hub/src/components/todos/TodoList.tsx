@@ -1,6 +1,5 @@
 import { Todo } from "@/types";
 import TodoCard from "./TodoCard";
-import { getUserById } from "@/data/mockData";
 
 interface TodoListProps {
   todos: Todo[];
@@ -8,6 +7,7 @@ interface TodoListProps {
   onEdit: (todo: Todo) => void;
   onDelete: (id: number) => void;
   showOwner?: boolean;
+  readOnly?: boolean;
   emptyMessage?: string;
 }
 
@@ -17,6 +17,7 @@ const TodoList = ({
   onEdit,
   onDelete,
   showOwner = false,
+  readOnly = false,
   emptyMessage = "No todos found",
 }: TodoListProps) => {
   if (todos.length === 0) {
@@ -29,20 +30,17 @@ const TodoList = ({
 
   return (
     <div className="space-y-3">
-      {todos.map((todo) => {
-        const owner = showOwner ? getUserById(todo.owner_id) : undefined;
-        return (
-          <TodoCard
-            key={todo.id}
-            todo={todo}
-            onToggleComplete={onToggleComplete}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            showOwner={showOwner}
-            ownerName={owner ? `${owner.first_name} ${owner.last_name}` : undefined}
-          />
-        );
-      })}
+      {todos.map((todo) => (
+        <TodoCard
+          key={todo.id}
+          todo={todo}
+          onToggleComplete={onToggleComplete}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          showOwner={showOwner}
+          readOnly={readOnly}
+        />
+      ))}
     </div>
   );
 };

@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import PublicRoute from "./routes/PublicRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import AdminRoute from "./routes/AdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -54,9 +55,9 @@ const App = () => (
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <AdminRoute>
                   <AdminPanel />
-                </ProtectedRoute>
+                </AdminRoute>
               }
             />
 

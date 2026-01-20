@@ -6,8 +6,10 @@ import { User, Mail, Phone, Shield, CheckCircle2 } from "lucide-react";
 import { Navigate } from "react-router-dom";
 
 const Profile = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
+  if(loading) return null;
+    
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
@@ -78,7 +80,7 @@ const Profile = () => {
                 <Phone className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Phone Number</p>
-                  <p className="font-medium">{user.phone_number}</p>
+                  <p className="font-medium">{user.phone_number || "Not provided."}</p>
                 </div>
               </div>
             </div>

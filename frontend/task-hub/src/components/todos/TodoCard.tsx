@@ -18,6 +18,7 @@ interface TodoCardProps {
   onDelete: (id: number) => void;
   showOwner?: boolean;
   ownerName?: string;
+  readOnly?: boolean;
 }
 
 const priorityLabels: Record<number, string> = {
@@ -34,6 +35,7 @@ const TodoCard = ({
   onEdit,
   onDelete,
   showOwner = false,
+  readOnly = false,
   ownerName,
 }: TodoCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -48,11 +50,13 @@ const TodoCard = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-start gap-3">
-        <Checkbox
-          checked={todo.completed}
-          onCheckedChange={() => onToggleComplete(todo.id)}
-          className="mt-1"
-        />
+        {!readOnly && (
+          <Checkbox
+            checked={todo.completed}
+            onCheckedChange={() => onToggleComplete(todo.id)}
+            className="mt-1"
+          />
+        )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3
@@ -95,13 +99,15 @@ const TodoCard = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => onEdit(todo)}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Pencil className="h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
+              {!readOnly && (
+                <DropdownMenuItem
+                  onClick={() => onEdit(todo)}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Pencil className="h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={() => onDelete(todo.id)}
                 className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
