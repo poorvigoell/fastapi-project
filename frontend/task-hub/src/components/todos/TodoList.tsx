@@ -38,6 +38,7 @@ const TodoList = ({
           onEdit={onEdit}
           onDelete={onDelete}
           showOwner={showOwner}
+          ownerName={`User ID: ${todo.owner_id}`}
           readOnly={readOnly}
         />
       ))}

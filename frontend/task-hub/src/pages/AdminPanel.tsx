@@ -19,10 +19,12 @@ import api from "@/lib/api";
 
 const AdminPanel = () => {
   const { isAdmin, loading } = useAuth();
+  const [totalUsers, setTotalUsers] = useState<number>(0);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   // const [filterOwner, setFilterOwner] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "completed" | "pending">("all");
+  const [selectedUserId, setSelectedUserId] = useState<string>("all");
 
   if (loading) return null;
 
@@ -35,7 +37,12 @@ const AdminPanel = () => {
 
     const fetchAdminTodos = async () => {
       try {
-        const res = await api.get("/admin/todo");
+        const url =
+          selectedUserId === "all"
+            ? "/admin/todo"
+            : `/admin/todo/user/${selectedUserId}`;
+
+        const res = await api.get(url);
         setTodos(res.data);
       } catch (err) {
         console.error("Failed to fetch admin todos", err);
@@ -43,8 +50,22 @@ const AdminPanel = () => {
     };
 
     fetchAdminTodos();
-  }, [isAdmin]);
+  }, [isAdmin, selectedUserId]);
 
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const fetchUsers = async () => {
+      try {
+        const res = await api.get("/admin/users");
+        setTotalUsers(res.data.length);
+      } catch (err) {
+        console.error("Failed to fetch users", err);
+      }
+    };
+
+    fetchUsers();
+  }, [isAdmin]);
 
   const filteredTodos = useMemo(() => {
     let result = [...todos];
@@ -79,10 +100,10 @@ const AdminPanel = () => {
   const stats = useMemo(() => {
     return {
       totalTodos: todos.length,
-      totalUsers: new Set(todos.map((t) => t.owner_id)).size,
+      totalUsers,
       completedTodos: todos.filter((t) => t.completed).length,
     };
-  }, [todos]);
+  }, [todos, totalUsers]);
 
   const handleToggleComplete = () => { };
 
@@ -164,20 +185,14 @@ const AdminPanel = () => {
             />
           </div>
           <div className="flex gap-2">
-            {/* <Select value={filterOwner} onValueChange={setFilterOwner}>
-              <SelectTrigger className="w-[150px]">
-                <Users className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="All Users" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Users</SelectItem>
-                {mockUsers.map((u) => (
-                  <SelectItem key={u.id} value={String(u.id)}>
-                    {u.first_name} {u.last_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select> */}
+            <Input
+              placeholder="Filter by User ID"
+              value={selectedUserId === "all" ? "" : selectedUserId}
+              onChange={(e) =>
+                setSelectedUserId(e.target.value.trim() || "all")
+              }
+            />
+
             <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v as typeof filterStatus)}>
               <SelectTrigger className="w-[130px]">
                 <Filter className="h-4 w-4 mr-2" />
