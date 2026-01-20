@@ -9,14 +9,15 @@ from sqlalchemy.orm import Session
 from starlette import status
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
+import os
 
 router = APIRouter(
     prefix = '/auth',
     tags = ['auth']
 )
 
-SECRET_KEY = '020ccd17b9af04d2a57c0af8346132a5a05c9d573add48948f04926d5f7b2d6e'
-ALGORITHM = 'HS256'
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="auth/token")
@@ -33,6 +34,10 @@ class CreateUserRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
 def get_db():
     db = SessionLocal()
@@ -94,3 +99,32 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     
     token = create_access_token(user.username, user.id, user.role, timedelta(minutes=20))
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/login", response_model=Token)
+async def login_json(
+    login_request: LoginRequest,
+    db: db_dependency
+):
+    user = authenticate_user(
+        login_request.username,
+        login_request.password,
+        db
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid credentials"
+        )
+
+    token = create_access_token(
+        user.username,
+        user.id,
+        user.role,
+        timedelta(minutes=20)
+    )
+
+    return {
+        "access_token": token,
+        "token_type": "bearer"
+    }

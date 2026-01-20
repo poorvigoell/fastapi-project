@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Task Manager Design System - Clean, Professional, Production-Ready */
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 215 20% 95%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 215 20% 95%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 215 20% 95%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+
+    /* Priority colors */
+    --priority-1: 215 16% 47%;
+    --priority-2: 199 89% 48%;
+    --priority-3: 38 92% 50%;
+    --priority-4: 25 95% 53%;
+    --priority-5: 0 84% 60%;
+
+    /* Admin accent */
+    --admin: 262 83% 58%;
+    --admin-foreground: 0 0% 100%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 20% 95%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 221 83% 53%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 221 83% 53%;
+
+    --priority-1: 215 20% 65%;
+    --priority-2: 199 89% 48%;
+    --priority-3: 38 92% 50%;
+    --priority-4: 25 95% 53%;
+    --priority-5: 0 84% 60%;
+
+    --admin: 262 83% 58%;
+    --admin-foreground: 0 0% 100%;
+
+    --sidebar-background: 222 47% 9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 221 83% 53%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .page-container {
+    @apply min-h-screen bg-background;
+  }
+
+  .content-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  }
+
+  .auth-container {
+    @apply min-h-screen flex items-center justify-center bg-background px-4;
+  }
+
+  .auth-card {
+    @apply w-full max-w-md bg-card rounded-xl shadow-lg border border-border p-8;
+  }
+
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .priority-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .priority-1 {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  .priority-2 {
+    @apply bg-[hsl(199,89%,48%,0.1)] text-[hsl(199,89%,48%)];
+  }
+
+  .priority-3 {
+    @apply bg-[hsl(38,92%,50%,0.1)] text-[hsl(38,92%,50%)];
+  }
+
+  .priority-4 {
+    @apply bg-[hsl(25,95%,53%,0.1)] text-[hsl(25,95%,53%)];
+  }
+
+  .priority-5 {
+    @apply bg-destructive/10 text-destructive;
+  }
+
+  .admin-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[hsl(262,83%,58%,0.1)] text-[hsl(262,83%,58%)];
+  }
+
+  .todo-card {
+    @apply bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow duration-200;
+  }
+
+  .todo-card-completed {
+    @apply opacity-60;
+  }
+
+  .nav-link {
+    @apply text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm font-medium;
+  }
+
+  .nav-link-active {
+    @apply text-primary;
+  }
+}
