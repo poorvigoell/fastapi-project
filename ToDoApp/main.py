@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
 load_dotenv()
-from .seed_admin import create_admin_if_not_exists
+from seed_admin import create_admin_if_not_exists
 from fastapi import FastAPI
-from .models import Base
-from .database import engine, SessionLocal
-from .routers import auth, todos, admin, users
+from models import Base
+from database import engine, SessionLocal
+from routers import auth, todos, admin, users
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()

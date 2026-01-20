@@ -3,10 +3,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette import status
-from ..models import ToDos
-from ..database import SessionLocal
+from models import ToDos
+from database import SessionLocal
 from pydantic import BaseModel, Field
-from .auth import get_current_user
+from routers.auth import get_current_user
 
 router = APIRouter(
     prefix='/todos',

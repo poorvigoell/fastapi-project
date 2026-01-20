@@ -1,6 +1,6 @@
 import os
 from sqlalchemy.orm import Session
-from .models import Users
+from models import Users
 from passlib.context import CryptContext
 
 # Use the SAME bcrypt config as auth.py
