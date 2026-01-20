@@ -17,10 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-Base.metadata.create_all(bind=engine)
-
 @app.on_event("startup")
 def startup():
+    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         create_admin_if_not_exists(db)
