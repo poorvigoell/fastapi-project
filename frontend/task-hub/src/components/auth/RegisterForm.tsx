@@ -43,7 +43,7 @@ const RegisterForm = () => {
       setError(null);
       // Mock registration - in production, this would call the API
       console.log("Registration data:", data);
-      await api.post("/auth", {
+      await api.post("/auth/register", {
         username: data.username,
         email: data.email,
         first_name: data.first_name,
@@ -58,8 +58,9 @@ const RegisterForm = () => {
 
       // 3️⃣ Redirect to dashboard
       navigate("/");
-    } catch (err) {
-      setError("Registration failed. Please try again.");
+    } catch (err: any) {
+        console.error(err.response?.data || err);
+        setError(err.response?.data?.detail || "Registration failed");
     }
   };
 
